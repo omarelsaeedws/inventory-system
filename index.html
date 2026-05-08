@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة المخزون | Inventory Pro</title>
+    <meta name="description" content="نظام احترافي لإدارة المخزون والمنتجات والطلبات وحساب الأرباح تلقائياً.">
+    <link rel="stylesheet" href="/main.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <span>مخزوني Pro</span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-section="dashboard">
+                            <i class="fas fa-chart-line"></i>
+                            <span>لوحة التحكم</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="products">
+                            <i class="fas fa-box"></i>
+                            <span>المنتجات</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-section="orders">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>الطلبات</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="active">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>لوحة التحكم</h1>
+                        <p>نظرة عامة على أداء عملك اليوم</p>
+                    </div>
+                    <div class="header-actions" style="display: flex; gap: 10px;">
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                        <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">
+                            <i class="fas fa-file-import"></i> استيراد
+                        </button>
+                        <button class="btn btn-primary" id="export-btn">
+                            <i class="fas fa-file-export"></i> تصدير
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-title">إجمالي المبيعات</div>
+                        <div class="stat-value" id="stat-total-sales" style="color: var(--primary)">0.00</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-wallet"></i>
+                            <span>المبيعات المحققة</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">قيمة المخزون (بالتكلفة)</div>
+                        <div class="stat-value" id="stat-total-inventory" style="color: var(--warning)">0.00</div>
+                        <div class="stat-trend">
+                            <i class="fas fa-boxes"></i>
+                            <span>رأس المال في المخزن</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">إجمالي الأرباح الصافية</div>
+                        <div class="stat-value" id="stat-total-profit">0.00</div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>محدث فوراً</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">عدد المنتجات</div>
+                        <div class="stat-value" id="stat-total-products">0</div>
+                        <div class="stat-trend">
+                            <span>في المخزن حالياً</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title">إجمالي الطلبات</div>
+                        <div class="stat-value" id="stat-total-orders">0</div>
+                        <div class="stat-trend">
+                            <span>جميع الحالات</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-header">
+                    <div class="page-title">
+                        <h2>آخر الطلبات</h2>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="recent-orders-table">
+                        <thead>
+                            <tr>
+                                <th>المعرف</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>التكلفة</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row data via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Products Section -->
+            <section id="products">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>إدارة المنتجات</h1>
+                        <p>أضف وعدل منتجاتك في المخزن</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('product-modal')">
+                        <i class="fas fa-plus"></i>
+                        <span>منتج جديد</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>اسم المنتج</th>
+                                <th>الكمية المتوفرة</th>
+                                <th>سعر التكلفة</th>
+                                <th>سعر البيع</th>
+                                <th>إجمالي القيمة (تكلفة)</th>
+                                <th>الربح لكل قطعة</th>
+                                <th>العمليات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row data via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Orders Section -->
+            <section id="orders">
+                <div class="page-header">
+                    <div class="page-title">
+                        <h1>إدارة الطلبات</h1>
+                        <p>تتبع مبيعاتك وحالات الشحن</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openModal('order-modal')">
+                        <i class="fas fa-plus"></i>
+                        <span>طلب جديد</span>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>المعرف</th>
+                                <th>التاريخ</th>
+                                <th>العميل</th>
+                                <th>المنتج</th>
+                                <th>الكمية</th>
+                                <th>الشحن (فعلي/محصل)</th>
+                                <th>الخصم</th>
+                                <th>إجمالي الربح</th>
+                                <th>الحالة</th>
+                                <th>العمليات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Row data via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Product Modal -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="product-modal-title">إضافة منتج جديد</h2>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="form-group">
+                    <label>اسم المنتج</label>
+                    <input type="text" id="product-name" class="form-input" required placeholder="مثلاً: هاتف ذكي">
+                </div>
+                <div class="form-group">
+                    <label>الكمية المتوفرة (Stock)</label>
+                    <input type="number" id="product-stock" class="form-input" required min="0" value="0">
+                </div>
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label>سعر التكلفة (Cost Price)</label>
+                        <input type="number" id="product-cost" class="form-input" required step="0.01" min="0">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>سعر البيع (Selling Price)</label>
+                        <input type="number" id="product-selling" class="form-input" required step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('product-modal')">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">حفظ المنتج</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Order Modal -->
+    <div id="order-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>إنشاء طلب جديد</h2>
+            </div>
+            <form id="order-form">
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label>تاريخ الطلب</label>
+                        <input type="date" id="order-date" class="form-input" required>
+                    </div>
+                    <div style="flex: 2;">
+                        <label>اسم العميل</label>
+                        <input type="text" id="order-customer" class="form-input" required placeholder="مثلاً: أحمد محمود">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>اختر المنتج</label>
+                    <select id="order-product-id" class="form-input" required>
+                        <option value="">اختر منتجاً...</option>
+                        <!-- Options via JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>الكمية</label>
+                    <input type="number" id="order-quantity" class="form-input" required min="1" value="1">
+                </div>
+                <div class="form-group" style="display: flex; gap: 1rem;">
+                    <div style="flex: 1;">
+                        <label>الشحن المحصل من العميل</label>
+                        <input type="number" id="order-shipping-collected" class="form-input" required step="0.01" min="0" value="0">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>تكلفة الشحن الفعلية</label>
+                        <input type="number" id="order-shipping-actual" class="form-input" required step="0.01" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>قيمة الخصم</label>
+                    <input type="number" id="order-discount" class="form-input" required step="0.01" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label>حالة الطلب</label>
+                    <select id="order-status" class="form-input" required>
+                        <option value="pending">قيد التنفيذ</option>
+                        <option value="delivered">تم التسليم</option>
+                        <option value="returned">مرتجع</option>
+                        <option value="returned_no_receive">مرتجع دون استلام</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-ghost" onclick="closeModal('order-modal')">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">تأكيد الطلب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/main.js"></script>
+</body>
+</html>
